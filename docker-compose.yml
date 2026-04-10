@@ -1,0 +1,36 @@
+services:
+  golang-app:
+    build: .
+    container_name: "golang-app"
+    restart: always
+    ports:
+      - "8080:3000"
+      - "6464:6464"
+    environment:
+      DB_HOST: mysql_db
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_PORT: 3306
+    depends_on:
+      - mysql_db
+    volumes:
+      - .:/app
+    command: godoc -http=:6464
+
+  mysql_db:
+    image: mysql:8.0.33
+    container_name: "golang-mysql"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
